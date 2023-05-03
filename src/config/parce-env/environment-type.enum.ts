@@ -1,0 +1,4 @@
+export enum EnvironmentType {
+  ENVIRONMENT_TYPE_STRING,
+  ENVIRONMENT_TYPE_NUMBER,
+}
