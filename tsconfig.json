@@ -1,0 +1,10 @@
+{
+  "extends": ["@tsconfig/node18/tsconfig.json", "./tsconfig.strict.json"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "incremental": true
+  }
+}
