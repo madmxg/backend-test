@@ -21,7 +21,11 @@ module.exports = {
     'plugin:prettier/recommended',
   ],
   rules: {
-    '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/array-type': [
+      'error',
+      { default: 'generic', readonly: 'generic' },
+    ],
     curly: ['error', 'all'],
+    'no-console': 'error',
   },
 };
