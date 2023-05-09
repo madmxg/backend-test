@@ -1,9 +1,16 @@
 import { connect, disconnect } from 'mongoose';
 
-export function connectDb(uri: string) {
-  return connect(uri);
-}
+import { Logger } from '../logger';
 
-export function disconnectDb() {
-  return disconnect();
+export class Db {
+  constructor(private readonly uri: string, private readonly logger: Logger) {}
+  public connect() {
+    this.logger.log('connect to DB %s', this.uri);
+    return connect(this.uri);
+  }
+
+  public disconnect() {
+    this.logger.log('disconnect DB', this.uri);
+    return disconnect();
+  }
 }
