@@ -1,5 +1,9 @@
-import { connect } from 'mongoose';
+import { connect, disconnect } from 'mongoose';
 
-export function connectMongoDb(uri: string) {
+export function connectDb(uri: string) {
   return connect(uri);
+}
+
+export function disconnectDb() {
+  return disconnect();
 }

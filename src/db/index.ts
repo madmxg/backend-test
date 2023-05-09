@@ -1,2 +1,3 @@
 export * from './db';
-export * from './customers';
+export * from './customer';
+export * from './customer-anonymised';

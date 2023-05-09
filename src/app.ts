@@ -3,12 +3,12 @@ import './config/config';
 import { config } from './config';
 import { BuyerProvider } from './buyer';
 import { LoggerConsole } from './logger';
-import { connectMongoDb, CustomerModel, CustomersRepository } from './db';
+import { connectDb, CustomerModel, CustomersRepository } from './db';
 
 const logger = new LoggerConsole();
 
 async function run(): Promise<void> {
-  await connectMongoDb(config.dbUri);
+  await connectDb(config.dbUri);
 
   const buyerProvider = new BuyerProvider();
   const customersRepository = new CustomersRepository(CustomerModel);

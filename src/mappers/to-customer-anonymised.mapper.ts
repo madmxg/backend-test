@@ -1,0 +1,40 @@
+import { CustomerAnonymised, CustomerDocument } from '../db';
+import { anonymize } from '../utils';
+
+export function mapToCustomerAnonymised(
+  customerDocument: CustomerDocument
+): CustomerAnonymised {
+  const customer = customerDocument.toObject<CustomerDocument>();
+
+  const firstName = anonymize(customer.firstName);
+  const lastName = anonymize(customer.lastName);
+
+  let [emailLeft, emailRight] = customer.email.split('@');
+  if (typeof emailLeft !== 'string') {
+    emailLeft = 'unknown.email';
+  }
+  if (typeof emailRight !== 'string') {
+    emailRight = 'unknown.domain';
+  }
+  const email = `${anonymize(emailLeft)}@${emailRight}`;
+
+  const addressLine1 = anonymize(customer.address.line1);
+  const addressLine2 = anonymize(customer.address.line2);
+  const addressPostcode = anonymize(customer.address.postcode);
+  const address = {
+    ...customer.address,
+    line1: addressLine1,
+    line2: addressLine2,
+    postcode: addressPostcode,
+  };
+
+  const customerAnonymised: CustomerAnonymised = {
+    ...customer,
+    address,
+    firstName,
+    lastName,
+    email,
+  };
+
+  return customerAnonymised;
+}
