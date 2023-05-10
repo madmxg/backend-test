@@ -1,26 +1,17 @@
-import './config/config';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-import { config } from './config';
-import { BuyerProvider } from './buyer';
-import { LoggerConsole } from './logger';
-import { Db, CustomerModel, CustomersRepository } from './db';
+import { Db } from './common/db';
+import { config } from './common/config';
+import { LoggerConsole } from './common/logger';
+import { appProgram } from './programs/app-program';
 
 const logger = new LoggerConsole();
 
 const db = new Db(config.dbUri, logger);
 
-async function run(): Promise<void> {
-  const buyerProvider = new BuyerProvider();
-  const customersRepository = new CustomersRepository(CustomerModel);
-
-  for await (const buyers of buyerProvider.read()) {
-    logger.log(buyers.length);
-    await customersRepository.insertMany(buyers);
-  }
-}
-
 db.connect()
-  .then(() => run())
+  .then(() => appProgram())
   .catch((error) => logger.error(error))
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   .finally(() => db.disconnect());

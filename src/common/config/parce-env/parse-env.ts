@@ -14,7 +14,7 @@ export function parseEnvValue(
 export function parseEnvValue(
   envValueName: string,
   envType: EnvironmentType
-): string | number | string[] | number[] {
+): string | number {
   const envValue = process.env[envValueName];
 
   const envValueString = parseEnvString(envValue, envValueName);

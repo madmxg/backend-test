@@ -1,9 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import { delay, randomNumber } from '../utils';
 import { Buyer } from './buyer.interface';
+import { Logger } from '../../../common/logger';
+import { randomNumber, delay } from '../../../common/utils';
 
 export class BuyerProvider {
+  constructor(private readonly logger: Logger) {}
+
   public static generate(): Buyer {
     const buyer: Buyer = {
       firstName: faker.name.firstName(),
@@ -30,6 +33,7 @@ export class BuyerProvider {
         () => BuyerProvider.generate()
       );
 
+      this.logger.log('Was generated %d buyer(s)', buyers.length);
       yield buyers;
       // TODO: 200ms
       await delay(1000);
