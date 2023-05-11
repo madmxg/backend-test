@@ -3,6 +3,7 @@ import { FilterQuery } from 'mongoose';
 import {
   CustomerModel,
   CustomerDocument,
+  CustomerRepository,
   CustomerAnonymisedModel,
   CustomerAnonymisedDocument,
   CustomerAnonymisedRepository,
@@ -14,6 +15,7 @@ import { PatchOperation, PatchesEmitter } from './patches-emitter';
 
 export async function syncProgramWatch() {
   const logger = new LoggerConsole();
+  const customerRepository = new CustomerRepository(CustomerModel);
   const customerAnonymisedRepository = new CustomerAnonymisedRepository(
     CustomerAnonymisedModel
   );
@@ -36,8 +38,7 @@ export async function syncProgramWatch() {
       },
     ];
     const watchOptions = { fullDocument: 'updateLookup' };
-    // TODO: use repository method
-    const changeStreamEmitter = CustomerModel.watch<CustomerDocument>(
+    const changeStreamEmitter = customerRepository.watch(
       pipeline,
       watchOptions
     );

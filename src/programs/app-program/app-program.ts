@@ -1,13 +1,13 @@
 import { BuyerProvider } from './buyer';
 import { LoggerConsole } from '../../common/logger';
-import { CustomerModel, CustomersRepository } from '../../common/db';
+import { CustomerModel, CustomerRepository } from '../../common/db';
 
 export async function appProgram(): Promise<void> {
   const logger = new LoggerConsole();
   const buyerProvider = new BuyerProvider(logger);
-  const customersRepository = new CustomersRepository(CustomerModel);
+  const customerRepository = new CustomerRepository(CustomerModel);
 
   for await (const buyers of buyerProvider.read()) {
-    await customersRepository.insertMany(buyers);
+    await customerRepository.insertMany(buyers);
   }
 }

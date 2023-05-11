@@ -3,6 +3,7 @@ import { FilterQuery } from 'mongoose';
 import {
   CustomerModel,
   CustomerDocument,
+  CustomerRepository,
   CustomerAnonymisedModel,
   CustomerAnonymisedRepository,
 } from '../../common/db';
@@ -19,9 +20,9 @@ export async function syncProgramReindex(
   const customerAnonymisedRepository = new CustomerAnonymisedRepository(
     CustomerAnonymisedModel
   );
+  const customerRepository = new CustomerRepository(CustomerModel);
 
-  // TODO: use repository method
-  for await (const customer of CustomerModel.find(filter).cursor()) {
+  for await (const customer of customerRepository.findWithCursor(filter)) {
     const customerAnonymised = mapToCustomerAnonymised(customer.toObject());
     await customerAnonymisedRepository.upsertOne(customerAnonymised);
   }
