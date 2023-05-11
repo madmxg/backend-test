@@ -2,7 +2,7 @@ import { BuyerProvider } from './buyer';
 import { LoggerConsole } from '../../common/logger';
 import { CustomerModel, CustomersRepository } from '../../common/db';
 
-export async function appProgram() {
+export async function appProgram(): Promise<void> {
   const logger = new LoggerConsole();
   const buyerProvider = new BuyerProvider(logger);
   const customersRepository = new CustomersRepository(CustomerModel);

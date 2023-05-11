@@ -1,43 +1,20 @@
-import './config/config';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-import { config } from './config';
-import { LoggerConsole } from './logger';
-import {
-  Db,
-  CustomerAnonymisedModel,
-  CustomerAnonymisedRepository,
-  CustomerModel,
-} from './db';
-import { mapToCustomerAnonymised } from './mappers';
+import { Db } from './common/db';
+import { config } from './common/config';
+import { LoggerConsole } from './common/logger';
+import { syncProgram } from './programs/sync-program';
 
 const logger = new LoggerConsole();
 
 const db = new Db(config.dbUri, logger);
 
-async function run(): Promise<void> {
-  const customerAnonymisedRepository = new CustomerAnonymisedRepository(
-    CustomerAnonymisedModel
-  );
-
-  if (process.argv.includes('--full-reindex')) {
-    logger.log('reindex mode');
-
-    for await (const customer of CustomerModel.find().cursor()) {
-      const customerAnonymised = mapToCustomerAnonymised(customer);
-      await customerAnonymisedRepository.upsertOne(customerAnonymised);
-    }
-  } else {
-    logger.log('watch mode');
-
-    const changeStream = CustomerModel.watch();
-    changeStream.on('change', (change) => logger.log('----', change));
-  }
-
-  logger.log('done');
-}
-
 db.connect()
-  .then(() => run())
+  .then(() => {
+    const mode = process.argv.includes('--full-reindex') ? 'reindex' : 'watch';
+    return syncProgram(mode);
+  })
   .catch((error) => logger.error(error))
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   .finally(() => db.disconnect());
