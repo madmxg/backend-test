@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface Customer {
   firstName: string;
@@ -14,6 +14,8 @@ export interface Customer {
   };
 }
 
-export interface CustomerDocument extends Customer, Document {
+export interface CustomerDocument
+  extends Customer,
+    Document<Types.ObjectId, unknown, Customer> {
   createdAt: Date;
 }

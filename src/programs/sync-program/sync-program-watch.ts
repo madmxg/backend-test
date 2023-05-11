@@ -1,21 +1,33 @@
-import { LoggerConsole } from '../../common/logger';
+import { FilterQuery } from 'mongoose';
+
 import {
-  CustomerAnonymisedModel,
-  CustomerAnonymisedRepository,
-  CustomerDocument,
   CustomerModel,
+  CustomerDocument,
+  CustomerAnonymisedModel,
+  CustomerAnonymisedDocument,
+  CustomerAnonymisedRepository,
 } from '../../common/db';
-import { PatchOperation, PatchesEmitter } from './patches-emitter';
+import { LoggerConsole } from '../../common/logger';
 import { mapToBulkWriters } from '../../common/mappers';
-import { Types } from 'mongoose';
+import { syncProgramReindex } from './sync-program-reindex';
+import { PatchOperation, PatchesEmitter } from './patches-emitter';
 
-export async function syncProgramWatch(): Promise<void> {
+export async function syncProgramWatch() {
   const logger = new LoggerConsole();
+  const customerAnonymisedRepository = new CustomerAnonymisedRepository(
+    CustomerAnonymisedModel
+  );
 
-  return new Promise<void>((resolve, reject) => {
-    const customerAnonymisedRepository = new CustomerAnonymisedRepository(
-      CustomerAnonymisedModel
-    );
+  const lastAnonymisedCustomer =
+    await customerAnonymisedRepository.getLastCustomer();
+
+  const reindexFilter: FilterQuery<CustomerAnonymisedDocument> =
+    lastAnonymisedCustomer === null
+      ? {}
+      : { _id: { $gt: lastAnonymisedCustomer._id } };
+
+  const reindexPromise = syncProgramReindex(reindexFilter);
+  const watchPromise = new Promise<void>((resolve, reject) => {
     const pipeline = [
       {
         $match: {
@@ -31,18 +43,10 @@ export async function syncProgramWatch(): Promise<void> {
     );
     const patchChangesEmitter = new PatchesEmitter(changeStreamEmitter);
 
-    patchChangesEmitter.once('error', (error: Error) => {
-      logger.error(error);
-      reject(error);
-    });
     patchChangesEmitter.on(
       'data',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (
-        patchOperations: Array<
-          PatchOperation<CustomerDocument & { _id: Types.ObjectId }>
-        >
-      ) => {
+      async (patchOperations: Array<PatchOperation<CustomerDocument>>) => {
         logger.log('patch', patchOperations.length);
         const bulkWriters = mapToBulkWriters(patchOperations);
         await customerAnonymisedRepository.bulkWrite(bulkWriters.insertWrites);
@@ -51,5 +55,11 @@ export async function syncProgramWatch(): Promise<void> {
     );
     patchChangesEmitter.once('close', () => resolve(void 0));
     patchChangesEmitter.once('end', () => resolve(void 0));
+    patchChangesEmitter.once('error', (error: Error) => {
+      logger.error(error);
+      reject(error);
+    });
   });
+
+  return Promise.allSettled([reindexPromise, watchPromise]);
 }

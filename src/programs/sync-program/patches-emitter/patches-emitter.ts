@@ -1,11 +1,9 @@
 import EventEmitter from 'node:events';
-import { Document, Types, mongo } from 'mongoose';
+import { Document, mongo } from 'mongoose';
 
 import { PatchOperation } from './interfaces';
 
-export class PatchesEmitter<
-  TDocument extends Document & { _id: Types.ObjectId }
-> extends EventEmitter {
+export class PatchesEmitter<TDocument extends Document> extends EventEmitter {
   private deadline: NodeJS.Timeout | null = null;
   private deadlineMilliseconds = 6000;
   private patches: Array<PatchOperation<TDocument>> = [];

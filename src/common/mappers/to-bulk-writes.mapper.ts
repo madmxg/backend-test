@@ -1,13 +1,11 @@
-import { Types, mongo } from 'mongoose';
+import { mongo } from 'mongoose';
 
 import { CustomerAnonymised, CustomerDocument } from '../db';
 import { mapToCustomerAnonymised } from './to-customer-anonymised.mapper';
 import { PatchOperation } from '../../programs/sync-program/patches-emitter';
 
 export function mapToBulkWriters(
-  patchOperations: Array<
-    PatchOperation<CustomerDocument & { _id: Types.ObjectId }>
-  >
+  patchOperations: Array<PatchOperation<CustomerDocument>>
 ) {
   const bulkWriters = patchOperations.reduce(
     (accumulator, patchOperation) => {

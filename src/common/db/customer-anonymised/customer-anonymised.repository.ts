@@ -29,4 +29,10 @@ export class CustomerAnonymisedRepository {
   ) {
     return this.customerAnonymisedModel.bulkWrite(writes);
   }
+
+  public getLastCustomer() {
+    return this.customerAnonymisedModel.findOne({}, null, {
+      sort: { $natural: -1 },
+    });
+  }
 }

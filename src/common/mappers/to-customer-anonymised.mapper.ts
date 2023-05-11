@@ -1,10 +1,8 @@
-import { Types } from 'mongoose';
-
 import { anonymize } from '../utils';
 import { CustomerAnonymised, CustomerDocument } from '../db';
 
 export function mapToCustomerAnonymised(
-  customer: CustomerDocument & { _id: Types.ObjectId }
+  customer: CustomerDocument
 ): CustomerAnonymised {
   const firstName = anonymize(customer.firstName);
   const lastName = anonymize(customer.lastName);

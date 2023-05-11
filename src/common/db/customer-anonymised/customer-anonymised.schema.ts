@@ -1,4 +1,4 @@
-import { Model, Schema } from 'mongoose';
+import { Model, Schema, Types } from 'mongoose';
 
 import { CustomerAnonymisedDocument } from './customer-anonymised.interface';
 
@@ -7,6 +7,10 @@ export const CustomerAnonymisedSchema = new Schema<
   Model<CustomerAnonymisedDocument>
 >(
   {
+    _id: {
+      type: Types.ObjectId,
+      required: true,
+    },
     firstName: {
       type: String,
       required: true,
