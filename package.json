@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "app": "ts-node --project tsconfig.tsnode.json src/app.ts",
-    "sync": "ts-node --project tsconfig.tsnode.json src/sync.ts",
+    "build": "tsc --project tsconfig.build.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
