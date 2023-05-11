@@ -1,11 +1,8 @@
-import { FilterQuery } from 'mongoose';
-
 import {
   CustomerModel,
   CustomerDocument,
   CustomerRepository,
   CustomerAnonymisedModel,
-  CustomerAnonymisedDocument,
   CustomerAnonymisedRepository,
 } from '../../common/db';
 import { LoggerConsole } from '../../common/logger';
@@ -23,12 +20,7 @@ export async function syncProgramWatch() {
   const lastAnonymisedCustomer =
     await customerAnonymisedRepository.getLastCustomer();
 
-  const reindexFilter: FilterQuery<CustomerAnonymisedDocument> =
-    lastAnonymisedCustomer === null
-      ? {}
-      : { _id: { $gt: lastAnonymisedCustomer._id } };
-
-  const reindexPromise = syncProgramReindex(reindexFilter);
+  const reindexPromise = syncProgramReindex(lastAnonymisedCustomer);
   const watchPromise = new Promise<void>((resolve, reject) => {
     const pipeline = [
       {

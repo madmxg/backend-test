@@ -3,9 +3,13 @@ import { Document, mongo } from 'mongoose';
 
 import { PatchOperation } from './interfaces';
 
+const EMIT_DEADLINE_INTERVAL_MS = 1000;
+const EMIT_MAX_BUFFER_SIZE = 1000;
+
 export class PatchesEmitter<TDocument extends Document> extends EventEmitter {
   private deadline: NodeJS.Timeout | null = null;
-  private deadlineMilliseconds = 6000;
+  private deadlineMilliseconds: number = EMIT_DEADLINE_INTERVAL_MS;
+  private maxBufferSize: number = EMIT_MAX_BUFFER_SIZE;
   private patches: Array<PatchOperation<TDocument>> = [];
 
   constructor(changeStreamEmitter: mongo.ChangeStream<TDocument, any>) {
@@ -46,7 +50,7 @@ export class PatchesEmitter<TDocument extends Document> extends EventEmitter {
 
   public addDocument(document: PatchOperation<TDocument>) {
     this.patches.push(document);
-    if (this.patches.length === 30) {
+    if (this.patches.length === this.maxBufferSize) {
       this.emitData();
     }
   }

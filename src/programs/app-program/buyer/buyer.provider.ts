@@ -4,6 +4,8 @@ import { Buyer } from './buyer.interface';
 import { Logger } from '../../../common/logger';
 import { randomNumber, delay } from '../../../common/utils';
 
+const BUYERS_GENERATE_INTERVAL_MS = 200;
+
 export class BuyerProvider {
   constructor(private readonly logger: Logger) {}
 
@@ -35,8 +37,8 @@ export class BuyerProvider {
 
       this.logger.log('Was generated %d buyer(s)', buyers.length);
       yield buyers;
-      // TODO: 200ms
-      await delay(1000);
+
+      await delay(BUYERS_GENERATE_INTERVAL_MS);
     }
   }
 }
